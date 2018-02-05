@@ -18,6 +18,9 @@ export class Compressor implements ICompressorOptions {
   maxHeight?: number
   maxPixels?: number
 
+  /**
+   * @param {ICompressorOptions} options
+   */
   constructor(options: ICompressorOptions) {
     if (!this.isOptionsValid(options)) {
       throw new Error('The compressor can have only EXACT ONE parameter.')
@@ -28,6 +31,9 @@ export class Compressor implements ICompressorOptions {
     if (options.maxPixels != null) { this.maxPixels = options.maxPixels }
   }
 
+  /**
+   * Compress an image encoded in DataUrl.
+   */
   compress(dataUrl: string): Compressed {
     const deferred = defer<HTMLCanvasElement>()
 
