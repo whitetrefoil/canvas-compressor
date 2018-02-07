@@ -32,7 +32,9 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@whitetrefoil/deferred": "^0.1.0"
+    "@whitetrefoil/deferred": "^0.1.0",
+    "exif-js": "^2.3.0",
+    "pica": "^4.0.1"
   },
   "devDependencies": {
     "@types/jest": "^21.1.5",

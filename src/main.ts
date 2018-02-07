@@ -1,15 +1,22 @@
-import { defer }      from '@whitetrefoil/deferred'
-import { Compressed } from './compressed'
-
-interface IDimension {
-  width: number
-  height: number
-}
+import { defer }       from '@whitetrefoil/deferred'
+import * as Pica       from 'pica'
+import { Compressed }  from './compressed'
+import { IDimension }  from './interfaces/dimension'
+import { fixRotation } from './rotate'
 
 export interface ICompressorOptions {
   maxWidth?: number
   maxHeight?: number
   maxPixels?: number
+  picaConfig?: Pica.Config
+  ResizeOptions?: Pica.ResizeOptions
+}
+
+const DEFAULT_RESIZE_OPTIONS: Pica.ResizeOptions = {
+  quality         : 3,
+  unsharpAmount   : 80,
+  unsharpRadius   : 0.6,
+  unsharpThreshold: 2,
 }
 
 export class Compressor implements ICompressorOptions {
@@ -17,10 +24,11 @@ export class Compressor implements ICompressorOptions {
   maxWidth?: number
   maxHeight?: number
   maxPixels?: number
+  picaConfig?: Pica.Config
+  ResizeOptions?: Pica.ResizeOptions
 
-  /**
-   * @param {ICompressorOptions} options
-   */
+  private pica: Pica
+
   constructor(options: ICompressorOptions) {
     if (!this.isOptionsValid(options)) {
       throw new Error('The compressor can have only EXACT ONE parameter.')
@@ -29,6 +37,13 @@ export class Compressor implements ICompressorOptions {
     if (options.maxWidth != null) { this.maxWidth = options.maxWidth }
     if (options.maxHeight != null) { this.maxHeight = options.maxHeight }
     if (options.maxPixels != null) { this.maxPixels = options.maxPixels }
+    if (options.picaConfig != null) { this.picaConfig = options.picaConfig }
+    if (options.ResizeOptions != null) {
+      this.ResizeOptions = { ...DEFAULT_RESIZE_OPTIONS, ...options.ResizeOptions }
+    } else {
+      this.ResizeOptions = DEFAULT_RESIZE_OPTIONS
+    }
+    this.pica = new Pica(options.picaConfig)
   }
 
   /**
@@ -46,6 +61,7 @@ export class Compressor implements ICompressorOptions {
     const img    = new Image()
 
     img.onload = () => {
+
       const ctx = canvas.getContext('2d')
 
       if (ctx == null) {
@@ -66,11 +82,15 @@ export class Compressor implements ICompressorOptions {
         return new Compressed(deferred.promise)
       }
 
-      canvas.width  = dimen.width
-      canvas.height = dimen.height
-      ctx.drawImage(img, 0, 0, dimen.width, dimen.height)
-
-      deferred.resolve(canvas)
+      fixRotation(img, dimen, canvas, ctx)
+        .then(() => {
+          const tempCanvas  = document.createElement('canvas')
+          tempCanvas.width  = dimen.width
+          tempCanvas.height = dimen.height
+          return this.pica.resize(img, tempCanvas, this.ResizeOptions)
+        })
+        .then((resizedCanvas) => ctx.drawImage(resizedCanvas, 0, 0, dimen.width, dimen.height))
+        .then(() => { deferred.resolve(canvas) })
     }
 
     img.src = dataUrl
@@ -79,7 +99,11 @@ export class Compressor implements ICompressorOptions {
   }
 
   private isOptionsValid(options: ICompressorOptions = this): boolean {
-    return Object.keys(options).length === 1
+    let optionCount = 0
+    if (options.maxPixels != null) { optionCount += 1 }
+    if (options.maxWidth != null) { optionCount += 1 }
+    if (options.maxHeight != null) { optionCount += 1 }
+    return optionCount === 1
   }
 
   private zoomByWidth(dimen: IDimension, width: number): IDimension {
