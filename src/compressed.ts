@@ -1,5 +1,17 @@
 import { defer } from '@whitetrefoil/deferred'
 
+export interface IUrl {
+  url: string
+  width: number
+  height: number
+}
+
+export interface IBlob {
+  blob: Blob
+  width: number
+  height: number
+}
+
 export class Compressed {
   private canvasPromise: Promise<HTMLCanvasElement>
 
@@ -10,30 +22,38 @@ export class Compressed {
   /**
    * Output a JPEG image compressed to given quality in DataUrl.
    */
-  toJpgUrl(quality = 0.9): Promise<string> {
-    return this.canvasPromise.then((canvas) => canvas.toDataURL('image/jpeg', quality))
+  toJpgUrl(quality = 0.9): Promise<IUrl> {
+    return this.canvasPromise.then((canvas) => ({
+      url   : canvas.toDataURL('image/jpeg', quality),
+      width : canvas.width,
+      height: canvas.height,
+    }))
   }
 
   /**
    * Output a PNG image in DataUrl.
    */
-  toPngUrl(): Promise<string> {
-    return this.canvasPromise.then((canvas) => canvas.toDataURL('image/png'))
+  toPngUrl(): Promise<IUrl> {
+    return this.canvasPromise.then((canvas) => ({
+      url   : canvas.toDataURL('image/png'),
+      width : canvas.width,
+      height: canvas.height,
+    }))
   }
 
   /**
    * Try both PNG & JPEG in given quality then output the smaller one in DataUrl.
    */
-  toUrl(quality = 0.9): Promise<string> {
+  toUrl(quality = 0.9): Promise<IUrl> {
     return Promise.all([this.toJpgUrl(quality), this.toPngUrl()])
-      .then(([jpg, png]) => jpg.length < png.length ? jpg : png)
+      .then(([jpg, png]) => jpg.url.length < png.url.length ? jpg : png)
   }
 
   /**
    * Output a JPEG image compressed to given quality in Blob.
    */
-  toJpgBlob(quality = 0.9): Promise<Blob> {
-    const deferred = defer<Blob>()
+  toJpgBlob(quality = 0.9): Promise<IBlob> {
+    const deferred = defer<IBlob>()
 
     this.canvasPromise.then((canvas) => {
       canvas.toBlob((blob) => {
@@ -41,7 +61,7 @@ export class Compressed {
           deferred.reject(new Error('Failed to generate image blob.'))
           return
         }
-        deferred.resolve(blob)
+        deferred.resolve({ blob, width: canvas.width, height: canvas.height })
       }, 'image/jpeg', quality)
     })
 
@@ -51,8 +71,8 @@ export class Compressed {
   /**
    * Output a PNG image in Blob.
    */
-  toPngBlob(): Promise<Blob> {
-    const deferred = defer<Blob>()
+  toPngBlob(): Promise<IBlob> {
+    const deferred = defer<IBlob>()
 
     this.canvasPromise.then((canvas) => {
       canvas.toBlob((blob) => {
@@ -60,7 +80,7 @@ export class Compressed {
           deferred.reject(new Error('Failed to generate image blob.'))
           return
         }
-        deferred.resolve(blob)
+        deferred.resolve({ blob, width: canvas.width, height: canvas.height })
       }, 'image/png')
     })
 
@@ -70,8 +90,8 @@ export class Compressed {
   /**
    * Try both PNG & JPEG in given quality then output the smaller one in Blob.
    */
-  toBlob(quality = 0.9): Promise<Blob> {
+  toBlob(quality = 0.9): Promise<IBlob> {
     return Promise.all([this.toJpgBlob(quality), this.toPngBlob()])
-      .then(([jpg, png]) => jpg.size < png.size ? jpg : png)
+      .then(([jpg, png]) => jpg.blob.size < png.blob.size ? jpg : png)
   }
 }
