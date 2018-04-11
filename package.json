@@ -1,6 +1,6 @@
 {
   "name": "@whitetrefoil/canvas-compressor",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A simple in browser image compressor.  It creates an in-memory canvas then use it to compress the image.",
   "main": "lib/common/main.js",
   "module": "lib/esm/main.js",

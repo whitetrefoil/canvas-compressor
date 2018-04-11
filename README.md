@@ -95,6 +95,10 @@ onChange(ev: Event) {
 Changelog & Roadmap
 -------------------
 
+### v0.2.0
+
+* **BREAKING** Export images with dimension info.
+
 ### v0.1.0
 
 * Initial release.
