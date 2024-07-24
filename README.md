@@ -95,6 +95,10 @@ onChange(ev: Event) {
 Changelog & Roadmap
 -------------------
 
+### v0.3.0
+
+* **BREAKING** Upgrade infrastructure.
+
 ### v0.2.0
 
 * **BREAKING** Export images with dimension info.
