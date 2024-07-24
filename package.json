@@ -10,7 +10,7 @@
     "lib"
   ],
   "exports": {
-    ".": "./lib/index.js"
+    ".": "./lib/main.js"
   },
   "scripts": {
     "prepare": "echo 'This package must be published via Yarn, not NPM' && exit 1",
@@ -37,6 +37,7 @@
     "@types/eslint__js": "^8.42.3",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.12",
+    "@types/pica": "^9.0.4",
     "@vitest/coverage-v8": "^2.0.4",
     "@whitetrefoil/eslint-config": "^5.2.5",
     "cross-env": "^7.0.3",

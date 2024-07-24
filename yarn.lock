@@ -761,6 +761,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/pica@npm:^9.0.4":
+  version: 9.0.4
+  resolution: "@types/pica@npm:9.0.4"
+  checksum: 10c0/be815b696d148400683181eb6b33ca2aeaa7ec0b0b2af002fdc8643bbf6f7125808ace691b680dda2b96f9e3f6be045598794a9fbb6450efe6aee8c99ea7807f
+  languageName: node
+  linkType: hard
+
 "@types/stack-utils@npm:^2.0.0":
   version: 2.0.3
   resolution: "@types/stack-utils@npm:2.0.3"
@@ -996,6 +1003,7 @@ __metadata:
     "@types/eslint__js": "npm:^8.42.3"
     "@types/jest": "npm:^29.5.12"
     "@types/node": "npm:^20.14.12"
+    "@types/pica": "npm:^9.0.4"
     "@vitest/coverage-v8": "npm:^2.0.4"
     "@whitetrefoil/eslint-config": "npm:^5.2.5"
     cross-env: "npm:^7.0.3"

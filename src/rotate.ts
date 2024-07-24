@@ -1,8 +1,7 @@
-// tslint:disable:no-invalid-this
+import EXIF from 'exif-js'
+import pDefer from 'p-defer'
+import type {IDimension} from './interfaces/dimension.js'
 
-import { defer }      from '@whitetrefoil/deferred'
-import * as EXIF      from 'exif-js'
-import { IDimension } from './interfaces/dimension'
 
 /**
  * Rotate for EXIF "Orientation = 1" or unspecified:
@@ -11,7 +10,7 @@ import { IDimension } from './interfaces/dimension'
  * @returns Whether the width and height were swapped.
  */
 function rotate1(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): boolean {
-  canvas.width  = dimen.width
+  canvas.width = dimen.width
   canvas.height = dimen.height
   return false
 }
@@ -23,11 +22,11 @@ function rotate1(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRe
  * @returns Whether the width and height were swapped.
  */
 function rotate2(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): boolean {
-  canvas.width  = dimen.width
+  canvas.width = dimen.width
   canvas.height = dimen.height
-  context.translate(canvas.width / 2, 0)
+  context.translate(canvas.width/2, 0)
   context.scale(-1, 1)
-  context.translate(canvas.width / -2, 0)
+  context.translate(canvas.width/ -2, 0)
   return false
 }
 
@@ -38,11 +37,11 @@ function rotate2(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRe
  * @returns Whether the width and height were swapped.
  */
 function rotate3(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): boolean {
-  canvas.width  = dimen.width
+  canvas.width = dimen.width
   canvas.height = dimen.height
-  context.translate(canvas.width / 2, canvas.height / 2)
+  context.translate(canvas.width/2, canvas.height/2)
   context.rotate(Math.PI)
-  context.translate(canvas.width / -2, canvas.height / -2)
+  context.translate(canvas.width/ -2, canvas.height/ -2)
   return false
 }
 
@@ -53,11 +52,11 @@ function rotate3(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRe
  * @returns Whether the width and height were swapped.
  */
 function rotate4(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): boolean {
-  canvas.width  = dimen.width
+  canvas.width = dimen.width
   canvas.height = dimen.height
-  context.translate(0, canvas.height / 2)
+  context.translate(0, canvas.height/2)
   context.scale(1, -1)
-  context.translate(0, canvas.height / -2)
+  context.translate(0, canvas.height/ -2)
   return false
 }
 
@@ -68,12 +67,12 @@ function rotate4(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRe
  * @returns Whether the width and height were swapped.
  */
 function rotate5(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): boolean {
-  canvas.width  = dimen.height
+  canvas.width = dimen.height
   canvas.height = dimen.width
-  context.translate(canvas.width / 2, canvas.height / 2)
+  context.translate(canvas.width/2, canvas.height/2)
   context.scale(-1, 1)
-  context.rotate(Math.PI * 0.5)
-  context.translate(canvas.height / -2, canvas.width / -2)
+  context.rotate(Math.PI*0.5)
+  context.translate(canvas.height/ -2, canvas.width/ -2)
   return true
 }
 
@@ -84,11 +83,11 @@ function rotate5(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRe
  * @returns Whether the width and height were swapped.
  */
 function rotate6(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): boolean {
-  canvas.width  = dimen.height
+  canvas.width = dimen.height
   canvas.height = dimen.width
-  context.translate(canvas.width / 2, canvas.height / 2)
-  context.rotate(Math.PI * 0.5)
-  context.translate(canvas.height / -2, canvas.width / -2)
+  context.translate(canvas.width/2, canvas.height/2)
+  context.rotate(Math.PI*0.5)
+  context.translate(canvas.height/ -2, canvas.width/ -2)
   return true
 }
 
@@ -99,12 +98,12 @@ function rotate6(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRe
  * @returns Whether the width and height were swapped.
  */
 function rotate7(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): boolean {
-  canvas.width  = dimen.height
+  canvas.width = dimen.height
   canvas.height = dimen.width
-  context.translate(canvas.width / 2, canvas.height / 2)
+  context.translate(canvas.width/2, canvas.height/2)
   context.scale(-1, 1)
-  context.rotate(Math.PI * 1.5)
-  context.translate(canvas.height / -2, canvas.width / -2)
+  context.rotate(Math.PI*1.5)
+  context.translate(canvas.height/ -2, canvas.width/ -2)
   return true
 }
 
@@ -115,25 +114,25 @@ function rotate7(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRe
  * @returns Whether the width and height were swapped.
  */
 function rotate8(dimen: IDimension, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D): boolean {
-  canvas.width  = dimen.height
+  canvas.width = dimen.height
   canvas.height = dimen.width
-  context.translate(canvas.width / 2, canvas.height / 2)
-  context.rotate(Math.PI * 1.5)
-  context.translate(canvas.height / -2, canvas.width / -2)
+  context.translate(canvas.width/2, canvas.height/2)
+  context.rotate(Math.PI*1.5)
+  context.translate(canvas.height/ -2, canvas.width/ -2)
   return true
 }
 
 /**
  * @returns Whether the width & height are swapped.
  */
-export function fixRotation(
+export async function fixRotation(
   img: HTMLImageElement,
   dimen: IDimension,
   canvas: HTMLCanvasElement,
   context: CanvasRenderingContext2D,
 ): Promise<boolean> {
 
-  const deferred = defer<boolean>()
+  const deferred = pDefer<boolean>()
 
   EXIF.getData(img, function() {
     const orientation = EXIF.getTag(this, 'Orientation')
