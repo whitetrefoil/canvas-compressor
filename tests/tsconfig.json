@@ -1,26 +1,12 @@
 {
+  "extends"        : "../src/tsconfig.json",
   "compilerOptions": {
-    "outDir"                        : "../.building",
-    "allowJs"                       : false,
-    "allowSyntheticDefaultImports"  : false,
-    "target"                        : "es2017",
-    "lib"                           : ["es2017", "es7", "dom"],
-    "module"                        : "commonjs",
-    "moduleResolution"              : "node",
-    "strict"                        : true,
-    "inlineSources"                 : true,
-    "inlineSourceMap"               : true,
-    "skipLibCheck"                  : true,
-    "sourceMap"                     : false,
-    "emitDecoratorMetadata"         : true,
-    "experimentalDecorators"        : true,
-    "removeComments"                : false,
-    "noImplicitAny"                 : true,
-    "suppressImplicitAnyIndexErrors": true
+    "paths": {
+      "~/*": ["../src/*"]
+    }
   },
   "include"        : [
-    "**/*.ts",
     "../src/**/*.ts",
-    "../declarations/*.d.ts"
+    "**/*.ts"
   ]
 }
